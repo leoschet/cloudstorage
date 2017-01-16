@@ -1,9 +1,20 @@
 package restservices.cloudstorage;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType( propOrder = { "key", "data"} )
+@XmlRootElement(name = "Element")
 public class Element{
 
+	@XmlElement(name = "Key")
 	private String key;
+
+	@XmlElement(name = "Data")
 	private byte[] data;
 	
 	public byte[] getData() {
