@@ -12,19 +12,22 @@ import javax.ws.rs.core.Response;
 public class Application {
 
 		private HashTable hash;
+		private String str;
 		
 		/**
 		 * Constructor for ScorersServices
 		 */
 		public Application() {
 			// TODO: Read data from .txt
+			this.str = "alooo ";
 		}
 		
 		@GET
-		@Produces(MediaType.TEXT_XML)
+		@Produces(MediaType.TEXT_HTML)
 		@Path("/listAll")
-		public Response listAll() {
-			return null;
+		public String listAll() {
+			return "<html> " + "<title>" + "Hello Jersey" + "</title>"
+					+ "<body><h1>" + this.str + "</h1></body>" + "</html> ";
 		}
 		
 		@POST
@@ -32,5 +35,15 @@ public class Application {
 		// TODO: Receive element data by param
 		public Response addElement(@PathParam("id") int id) {
 			return null;
+		}
+		
+		@POST
+		@Produces(MediaType.TEXT_HTML)
+		@Path("/storeElement")
+		// TODO: Receive element data by param
+		public Response storeElement() {
+			this.str += "pegou!!!";
+			Response resp = Response.ok("<html> " + "<title>" + "Hello Jersey" + "</title>" + "<body><h1>" + this.str + "</h1></body>" + "</html> ", MediaType.TEXT_HTML).build();
+			return resp;
 		}
 }
