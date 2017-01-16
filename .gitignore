@@ -53,5 +53,4 @@ hs_err_pid*
 ########
 # Dynamic Web Project
 ########
-WebContent/META-INF/
 /build/
