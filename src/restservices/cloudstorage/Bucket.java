@@ -21,6 +21,7 @@ public class Bucket{
 	}
 	
 	public void add(Element e) throws ElementAlreadyExistsException{
+		sort();
 		for(int i = 0; i < elements.size(); i++)
 		{
 			if(elements.get(i).getKey().compareToIgnoreCase(e.getKey()) > 0) // current from list > new 

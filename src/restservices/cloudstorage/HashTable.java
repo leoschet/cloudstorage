@@ -27,7 +27,8 @@ public class HashTable {
 	private HashTable(){
 		this.setBucketManagers(new BucketManager[SIZE]);
 		for(int i = 0; i < SIZE; i++){
-			bucketManagers[i].start();
+			bucketManagers[i].setFileName(i);
+			bucketManagers[i].start(); // TODO: set run argument
 		}
 		readFile();
 	}

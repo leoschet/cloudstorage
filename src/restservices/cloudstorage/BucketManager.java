@@ -17,6 +17,9 @@ public class BucketManager extends Thread{
 	
 	public void run(int id){
 		this.setBucket(readFile());
+	}
+	
+	public void setFileName(int id){
 		this.setFileName("Bucket_"+id+".xml");
 	}
 	

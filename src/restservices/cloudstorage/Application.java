@@ -42,6 +42,7 @@ public class Application {
 		@Path("/storeElement")
 		// TODO: Receive element data by param
 		public Response storeElement() {
+			// TODO: read request
 			this.str += "pegou!!!";
 			Response resp = Response.ok("<html> " + "<title>" + "Hello Jersey" + "</title>" + "<body><h1>" + this.str + "</h1></body>" + "</html> ", MediaType.TEXT_HTML).build();
 			return resp;
