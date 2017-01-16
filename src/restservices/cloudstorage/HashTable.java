@@ -56,6 +56,8 @@ public class HashTable {
 		{
 			try {
 				getInstance().buckets[10 + c-'a'].remove(e.getKey());
+			} catch (Exception e1) {}
+			try {
 				getInstance().buckets[10 + c-'a'].add(e);
 			} catch (Exception e1) {}
 			
@@ -64,6 +66,8 @@ public class HashTable {
 		{
 			try {
 				getInstance().buckets[c-'0'].remove(e.getKey());
+			} catch (Exception e1) {}
+			try {
 				getInstance().buckets[c-'0'].add(e);
 			} catch (Exception e1) {}
 		}
