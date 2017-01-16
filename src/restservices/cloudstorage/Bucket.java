@@ -1,8 +1,11 @@
 package restservices.cloudstorage;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 public class Bucket{
+	
 	private Vector<Element> elements;
 	
 	public Bucket(){
@@ -16,22 +19,22 @@ public class Bucket{
 	private void setElements(Vector<Element> elements) {
 		this.elements = elements;
 	}
-	public void add(Element e) throws Exception{
+	
+	public void add(Element e) throws ElementAlreadyExistsException{
 		for(int i = 0; i < elements.size(); i++)
 		{
-			if(elements.get(i).getKey().compareToIgnoreCase(e.getKey()) < 0) // current from list <= new 
+			if(elements.get(i).getKey().compareToIgnoreCase(e.getKey()) > 0) // current from list > new 
 			{
 				elements.add(i,e);
 			}
 			else if(elements.get(i).getKey().compareToIgnoreCase(e.getKey()) == 0)
 			{
-				throw new Exception("Element Already Exists.");
+				throw new ElementAlreadyExistsException();
 			}
 		}
 	}
 	
-	
-	public void remove(String key) throws Exception{
+	public void remove(String key) throws ElementNotFoundException{
 		
 		boolean removed = false;
 		
@@ -43,27 +46,27 @@ public class Bucket{
 				removed = true;
 			}
 		}
-		
-		if(!removed){
-			throw new Exception("Element Not Found.");
+		if(!removed)
+		{
+			throw new ElementNotFoundException();
 		}
 	}
 	
-	public Element search(String key) throws Exception{
+	public Element search(String key) throws ElementNotFoundException{
 
 		for(int i = 0; i < elements.size(); i++)
 		{
 			if(elements.get(i).getKey().equalsIgnoreCase(key))
 			{
-				return elements.get(i);
-				
+				return elements.get(i);	
 			}
-			
 		}
-		throw new Exception("Element Not Found.");
+		throw new ElementNotFoundException();
 	}
 	
 	public Vector<Element> searchInterval(String first, String last){
+		
+		sort();
 		
 		Vector<Element> list = new Vector<Element>();
 
@@ -74,9 +77,16 @@ public class Bucket{
 				list.add(elements.get(i));
 			}
 		}
-
 		return list;
 	}
 	
+	public void sort() {
+	    Collections.sort(elements, new Comparator<Element>() {
+	        @Override
+	        public int compare(Element e1, Element e2) {
+	                return e1.getKey().compareTo(e2.getKey());
+	        }           
+	    });
+	}
 	
 }
