@@ -1,6 +1,5 @@
 package restservices.cloudstorage;
 
-import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,11 +15,6 @@ public class Functions {
 
 	public BlockingQueue<Message> getQueue(){
 		return this.responseQueue;
-	}
-
-	public void addList(Vector<Element> list, boolean overwrite) throws Exception  {
-		for(int i = 0; i < list.size(); i++)
-			add(list.get(i),overwrite);
 	}
 	
 	public void insert(Element e) throws Exception{
@@ -57,8 +51,6 @@ public class Functions {
 	public Bucket searchInterval(String firstKey, String lastKey) throws InterruptedException, InvalidKeyException {
 		Message msg = new Message(ERequestMessageType.SEARCH_INTERVAL, firstKey, lastKey, this);
 
-		// TODO: ordenar vector
-
 		int bucketsAmount = instance.queueMessageInterval(msg);
 		
 		Bucket bucket = new Bucket();
@@ -74,14 +66,28 @@ public class Functions {
 		return bucket;
 	}
 
-	public Bucket exportElements(){
-		Bucket export = new Bucket();
-		// TODO
-		return export;
+	public Bucket exportElements() throws InvalidKeyException, InterruptedException{
+		Message msg = new Message(ERequestMessageType.GET_ALL, this);
+		
+		int bucketsAmount = instance.queueMessageAll(msg);
+		
+		Bucket bucket = new Bucket();
+		
+		for (int i = 0; i <= bucketsAmount; i += 1) {
+			Message message = getResponse();
+			
+			if(message.type == EResponseMessageType.OK)
+				if(message.getBucket() != null && message.getBucket().getElements() != null)
+					bucket.getElements().addAll(message.getBucket().getElements());
+		}
+		
+		bucket.sort();
+		return bucket;
 	}
 
-	public void importElements(Bucket bucket){
-		// TODO
+	public void importElements(Bucket bucket, boolean overwrite) throws Exception  {
+		for(int i = 0; i < bucket.getElements().size(); i++)
+			add(bucket.getElements().get(i),overwrite);
 	}
 	
 	private void add(Element el, boolean overwrite) throws Exception {

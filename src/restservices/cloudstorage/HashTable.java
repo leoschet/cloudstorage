@@ -48,6 +48,13 @@ public class HashTable {
 		return lastIndex - firstIndex;
 	}
 
+	public int queueMessageAll(Message msg) throws InvalidKeyException, InterruptedException {
+
+		for (int i = 0; i < SIZE; i += 1)
+			bucketManagers[i].queueMessage(msg);
+		return SIZE;
+	}
+	
 	private int mapKey(String key) throws InvalidKeyException {
 		
 		int index = -1;
