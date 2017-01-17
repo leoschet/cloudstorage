@@ -2,20 +2,47 @@ package restservices.cloudstorage;
 
 public class Message {
 
+	public IMessageType type;
+	public Functions caller;
+	
 	private String key;
 	private Bucket bucket;
 	private Element element;
 	private String message;
 	private Exception exception;
 	private String ownner;
-	private Functions caller;
-	private String first;
-	private String last;
+	private String firstKey;
+	private String lastKey;
+	
+	public Message(IMessageType type, Functions caller) {
+		this.type = type;
+		this.caller = caller;
+	}
+	
+	public Message(IMessageType type, Element el, Functions caller) {
+		this.type = type;
+		this.element = el;
+		this.caller = caller;
+	}
+	
+	public Message(IMessageType type, String key, Functions caller) {
+		this.type = type;
+		this.key = key;
+		this.caller = caller;
+	}
+	
+	public Message(IMessageType type, String firstKey, String lastKey, Functions caller) {
+		this.type = type;
+		this.firstKey = firstKey;
+		this.lastKey = lastKey;
+		this.caller = caller;
+	}
 	
 	public Message(String message, Functions caller){
 		this.setMessage(message);
 		this.setCaller(caller);
 	}
+	
 	public Message(String message){
 		this.setMessage(message);
 	}
@@ -63,15 +90,15 @@ public class Message {
 		this.caller = caller;
 	}
 	public String getFirst() {
-		return first;
+		return firstKey;
 	}
 	public void setFirst(String first) {
-		this.first = first;
+		this.firstKey = first;
 	}
 	public String getLast() {
-		return last;
+		return lastKey;
 	}
 	public void setLast(String last) {
-		this.last = last;
+		this.lastKey = last;
 	}
 }

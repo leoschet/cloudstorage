@@ -233,5 +233,9 @@ public class BucketManager extends Thread{
 		}  
 		return bucket;
 	}
+
+	public void queueMessage(Message msg) throws InterruptedException {
+		queue.put(msg);
+	}
 	
 }
