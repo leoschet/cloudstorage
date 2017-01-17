@@ -11,6 +11,10 @@ public class Functions {
 		queue = new LinkedBlockingQueue<Message>();
 	}
 	
+	public BlockingQueue<Message> getQueue(){
+		return this.queue;
+	}
+	
 	private HashTable getInstance(){
 		return HashTable.getInstance();
 	}

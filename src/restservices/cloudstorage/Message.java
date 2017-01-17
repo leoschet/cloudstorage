@@ -16,6 +16,10 @@ public class Message {
 		this.setMessage(message);
 		this.setCaller(caller);
 	}
+	public Message(String message){
+		this.setMessage(message);
+	}
+	
 	public String getKey() {
 		return key;
 	}
