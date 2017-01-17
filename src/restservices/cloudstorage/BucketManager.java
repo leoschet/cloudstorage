@@ -3,20 +3,36 @@ package restservices.cloudstorage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+
 public class BucketManager extends Thread{
 
 	private Bucket bucket;
 	private String fileName;
 	
-	public void run(int id){
+	private BlockingQueue<Message> queue;
+	
+	public void run(){
 		this.setBucket(readFile());
+		queue = new LinkedBlockingQueue<Message>();
+		while(true){
+			Message msg;
+			while ((msg = queue.poll()) != null) {
+				// process msg
+			}
+			// do other stuff
+		}
+	}
+		
+	public BlockingQueue<Message> getQueue(){
+		return this.queue;
 	}
 	
 	public void setFileName(int id){
@@ -46,8 +62,8 @@ public class BucketManager extends Thread{
 		return bucket.search(key);
 	}
 	
-	public Vector<Element> searchInterval(String first, String last){
-		return bucket.searchInterval(first,last);
+	public Bucket searchInterval(String first, String last){
+		return new Bucket(bucket.searchInterval(first,last));
 	}
 
 	public String getFileName() {

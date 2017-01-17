@@ -21,7 +21,9 @@ public class Bucket{
 	public Bucket(){
 		this.setElements(new Vector<Element>());
 	}
-
+	public Bucket(Vector<Element> elements){
+		this.setElements(elements);
+	}
 	public Vector<Element> getElements() {
 		return elements;
 	}
