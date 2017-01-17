@@ -33,6 +33,7 @@ public class BucketManager extends Thread{
 
 	public void add(Element e) throws ElementAlreadyExistsException {
 		bucket.add(e);
+		bucket.sort();
 		writeFile();
 	}
 	

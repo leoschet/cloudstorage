@@ -27,6 +27,7 @@ public class HashTable {
 	private HashTable(){
 		this.setBucketManagers(new BucketManager[SIZE]);
 		for(int i = 0; i < SIZE; i++){
+			bucketManagers[i] = new BucketManager();
 			bucketManagers[i].setFileName(i);
 			bucketManagers[i].start(); // TODO: set run argument
 		}
@@ -45,9 +46,13 @@ public class HashTable {
 
 		char c = e.getKey().charAt(0);
 
-		if( (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') )
+		if( c >= 'a' && c <= 'z') 
 		{
 			getInstance().getBucketManagers()[10 + c-'a'].add(e);
+		}
+		else if(c >= 'A' && c <= 'Z') 
+		{
+			getInstance().getBucketManagers()[10 + c-'A'].add(e);
 		}
 		else if(c <= '0' && c <= '9')
 		{
@@ -59,7 +64,7 @@ public class HashTable {
 
 		char c = e.getKey().charAt(0);
 
-		if( (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') )
+		if( c >= 'a' && c <= 'z' )
 		{
 			try {
 				getInstance().getBucketManagers()[10 + c-'a'].remove(e.getKey());
@@ -71,6 +76,18 @@ public class HashTable {
 				throw new OverWriteException();
 			}
 
+		}
+		else if(c >= 'A' && c <= 'Z')
+		{
+			try {
+				getInstance().getBucketManagers()[10 + c-'A'].remove(e.getKey());
+			} catch (ElementNotFoundException e2) {}
+
+			try {
+				getInstance().getBucketManagers()[10 + c-'A'].add(e);
+			} catch (ElementAlreadyExistsException e1) {
+				throw new OverWriteException();
+			}
 		}
 		else if(c <= '0' && c <= '9')
 		{
@@ -91,9 +108,13 @@ public class HashTable {
 
 		char c = key.charAt(0);
 
-		if( (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') )
+		if(c >= 'a' && c <= 'z') 
 		{
 			getInstance().getBucketManagers()[10 + c-'a'].remove(key);
+		}
+		else if (c >= 'A' && c <= 'Z') 
+		{
+			getInstance().getBucketManagers()[10 + c-'A'].remove(key);
 		}
 		else if(c <= '0' && c <= '9')
 		{
@@ -107,9 +128,13 @@ public class HashTable {
 
 		Element e = null;
 
-		if( (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') )
+		if( c >= 'a' && c <= 'z') 
 		{
 			e = getInstance().getBucketManagers()[10 + c-'a'].search(key);
+		}
+		else if(c >= 'A' && c <= 'Z') 
+		{
+			e = getInstance().getBucketManagers()[10 + c-'A'].search(key);
 		}
 		else if(c <= '0' && c <= '9')
 		{

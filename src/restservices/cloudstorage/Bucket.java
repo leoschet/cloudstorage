@@ -31,17 +31,12 @@ public class Bucket{
 	}
 	
 	public void add(Element e) throws ElementAlreadyExistsException{
-		sort();
-		for(int i = 0; i < elements.size(); i++)
-		{
-			if(elements.get(i).getKey().compareToIgnoreCase(e.getKey()) > 0) // current from list > new 
-			{
-				elements.add(i,e);
-			}
-			else if(elements.get(i).getKey().compareToIgnoreCase(e.getKey()) == 0)
-			{
-				throw new ElementAlreadyExistsException();
-			}
+		
+		try {
+			search(e.getKey());
+		} catch (ElementNotFoundException e1) {
+			// TODO Auto-generated catch block
+			elements.add(e);
 		}
 	}
 	
