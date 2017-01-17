@@ -3,6 +3,8 @@ package restservices.cloudstorage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.StringReader;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,12 +21,15 @@ import javax.xml.bind.Unmarshaller;
 public class Application {
 
 	private HashTable hash;
+	
 
-
-	private Element readElement(StringReader s) throws JAXBException {
+	private BlockingQueue<Message> queue;
+	
+	private Element readElement(String s) throws JAXBException {
+		StringReader stringReader = new StringReader(s);
 		JAXBContext jaxbContext = JAXBContext.newInstance(Element.class);
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		Element element = (Element) unmarshaller.unmarshal(s);
+		Element element = (Element) unmarshaller.unmarshal(stringReader);
 		return element;
 	}
 
@@ -32,25 +37,30 @@ public class Application {
 	 * Constructor for ScorersServices
 	 */
 	public Application() {
-		// TODO: Read data from .txt
+		queue = new LinkedBlockingQueue<Message>();
+		hash = HashTable.getInstance();
 	}
 
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/storeFile")
-	public Response storeFile(StringReader xml) {
+	public Response storeFile(String xml){
+		
 		try{
 			Element element = readElement(xml);
 			try {
 				hash.add(element);
 			} catch (ElementAlreadyExistsException e) {
 				return Response.accepted("Element already exists").build();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		catch(JAXBException e){
 			return Response.serverError().build();
 		}
-
+	
 		return Response.ok("Element added!", MediaType.TEXT_PLAIN).build();
 	}
 
@@ -111,5 +121,13 @@ public class Application {
 	public Response importDatabase(String xml) {
 		// TODO: Load xml on HashTable
 		return null;
+	}
+
+	public BlockingQueue<Message> getQueue() {
+		return queue;
+	}
+
+	public void setQueue(BlockingQueue<Message> queue) {
+		this.queue = queue;
 	}
 }
