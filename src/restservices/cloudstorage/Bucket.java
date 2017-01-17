@@ -33,7 +33,6 @@ public class Bucket{
 	}
 	
 	public void add(Element e) throws ElementAlreadyExistsException{
-		
 		try {
 			search(e.getKey());
 		} catch (ElementNotFoundException e1) {
@@ -42,46 +41,35 @@ public class Bucket{
 		}
 	}
 	
-	public void remove(String key) throws ElementNotFoundException{
-		
-		boolean removed = false;
-		
-		for(int i = 0; i < elements.size(); i++)
-		{
+	public void remove(String key) throws ElementNotFoundException{	
+		boolean removed = false;		
+		for(int i = 0; i < elements.size(); i++){
 			if(elements.get(i).getKey().equalsIgnoreCase(key))
 			{
 				elements.remove(i);
 				removed = true;
 			}
 		}
-		if(!removed)
-		{
+		if(!removed){
 			throw new ElementNotFoundException();
 		}
 	}
 	
 	public Element search(String key) throws ElementNotFoundException{
-
-		for(int i = 0; i < elements.size(); i++)
-		{
-			if(elements.get(i).getKey().equalsIgnoreCase(key))
-			{
+		for(int i = 0; i < elements.size(); i++){
+			if(elements.get(i).getKey().equalsIgnoreCase(key)){
 				return elements.get(i);	
 			}
 		}
 		throw new ElementNotFoundException();
 	}
 	
-	public Vector<Element> searchInterval(String first, String last){
-		
+	public Vector<Element> searchInterval(String first, String last){	
 		sort();
-		
 		Vector<Element> list = new Vector<Element>();
-
 		for(int i = 0; i < elements.size(); i++){
 			if(elements.get(i).getKey().compareToIgnoreCase(first) >= 0
-					&& elements.get(i).getKey().compareToIgnoreCase(last) <= 0)
-			{
+					&& elements.get(i).getKey().compareToIgnoreCase(last) <= 0){
 				list.add(elements.get(i));
 			}
 		}
