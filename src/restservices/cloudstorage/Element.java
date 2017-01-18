@@ -15,12 +15,12 @@ public class Element{
 	private String key;
 
 	@XmlElement(name = "Data")
-	private byte[] data;
+	private String data;
 	
-	public byte[] getData() {
+	public String getData() {
 		return data;
 	}
-	public void setData(byte[] data) {
+	public void setData(String data) {
 		this.data = data;
 	}
 	public String getKey() {
@@ -30,7 +30,7 @@ public class Element{
 		this.key = key;
 	}
 	
-	public Element(String key, byte[] data){
+	public Element(String key,String data){
 		this.key = key;
 		this.data = data;
 	}
@@ -39,5 +39,6 @@ public class Element{
 		this.key = null;
 		this.data = null;
 	}
+	
 	
 }

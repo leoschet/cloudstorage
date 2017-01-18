@@ -17,10 +17,11 @@ public class HashTable {
 
 	private HashTable(){
 		this.setBucketManagers(new BucketManager[SIZE]);
-		for(int i = 0; i < SIZE; i++){
+		int i  =10;
+		//for(int i = 0; i < SIZE; i++){
 			bucketManagers[i] = new BucketManager(i);
 			bucketManagers[i].start(); // TODO: set run argument
-		}
+		//}
 	}
 
 	private void setBucketManagers(BucketManager[] bucketManagers) {
