@@ -18,8 +18,7 @@ public class HashTable {
 	private HashTable(){
 		this.setBucketManagers(new BucketManager[SIZE]);
 		for(int i = 0; i < SIZE; i++){
-			bucketManagers[i] = new BucketManager();
-			bucketManagers[i].setFileName(i);
+			bucketManagers[i] = new BucketManager(i);
 			bucketManagers[i].start(); // TODO: set run argument
 		}
 	}
@@ -40,8 +39,8 @@ public class HashTable {
 	
 	public int queueMessageInterval(Message msg) throws InvalidKeyException, InterruptedException {
 		
-		int firstIndex = mapKey(msg.getFirst());
-		int lastIndex = mapKey(msg.getLast());
+		int firstIndex = mapKey(msg.getFirstKey());
+		int lastIndex = mapKey(msg.getLastKey());
 		for (int i = firstIndex; i <= lastIndex; i += 1)
 			bucketManagers[i].queueMessage(msg);
 		

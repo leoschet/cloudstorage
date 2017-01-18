@@ -26,40 +26,46 @@ public class Functions {
 	}
 
 	public void remove(String key) throws Exception{
-		Message msg = new Message(ERequestMessageType.REMOVE, key, this);
+		
+		Message request = new Message(ERequestMessageType.REMOVE, this);
+		request.setSearchKey(key);
+		
+		instance.queueMessage(request);
 
-		instance.queueMessage(msg);
-
-		Message message = getResponse();
-		if (message.type == EResponseMessageType.ERR)
-			throw message.getException();
+		Message response = getResponse();
+		if (response.type == EResponseMessageType.ERR)
+			throw response.getException();
 	}
 
 	public Element search(String key) throws Exception {
-		Message msg = new Message(ERequestMessageType.SEARCH, key,this);
-
-		instance.queueMessage(msg);
-
-		Message message = getResponse();
 		
-		if(message.type == EResponseMessageType.ERR)
-			throw message.getException();
+		Message request = new Message(ERequestMessageType.SEARCH, this);
+		request.setSearchKey(key);
+		
+		instance.queueMessage(request);
 
-		return message.getElement();
+		Message response = getResponse();
+		
+		if(response.type == EResponseMessageType.ERR)
+			throw response.getException();
+
+		return response.getElement();
 	}
 
 	public Bucket searchInterval(String firstKey, String lastKey) throws InterruptedException, InvalidKeyException {
-		Message msg = new Message(ERequestMessageType.SEARCH_INTERVAL, firstKey, lastKey, this);
-
-		int bucketsAmount = instance.queueMessageInterval(msg);
+		
+		Message request = new Message(ERequestMessageType.SEARCH_INTERVAL, this);
+		request.setSearchInterval(firstKey, lastKey);
+		
+		int bucketsAmount = instance.queueMessageInterval(request);
 		
 		Bucket bucket = new Bucket();
 		for (int i = 0; i <= bucketsAmount; i += 1) {
-			Message message = getResponse();
+			Message response = getResponse();
 			
-			if(message.type == EResponseMessageType.OK)
-				if(message.getBucket() != null && message.getBucket().getElements() != null)
-					bucket.getElements().addAll(message.getBucket().getElements());
+			if(response.type == EResponseMessageType.OK)
+				if(response.getBucket() != null && response.getBucket().getElements() != null)
+					bucket.getElements().addAll(response.getBucket().getElements());
 		}
 		
 		bucket.sort();
@@ -67,18 +73,18 @@ public class Functions {
 	}
 
 	public Bucket exportElements() throws InvalidKeyException, InterruptedException{
-		Message msg = new Message(ERequestMessageType.GET_ALL, this);
+		Message request = new Message(ERequestMessageType.GET_ALL, this);
 		
-		int bucketsAmount = instance.queueMessageAll(msg);
+		int bucketsAmount = instance.queueMessageAll(request);
 		
 		Bucket bucket = new Bucket();
-		
+		Message response = null;
 		for (int i = 0; i <= bucketsAmount; i += 1) {
-			Message message = getResponse();
+			response = getResponse();
 			
-			if(message.type == EResponseMessageType.OK)
-				if(message.getBucket() != null && message.getBucket().getElements() != null)
-					bucket.getElements().addAll(message.getBucket().getElements());
+			if(response.type == EResponseMessageType.OK)
+				if(response.getBucket() != null && response.getBucket().getElements() != null)
+					bucket.getElements().addAll(response.getBucket().getElements());
 		}
 		
 		bucket.sort();
@@ -90,16 +96,17 @@ public class Functions {
 			add(bucket.getElements().get(i),overwrite);
 	}
 	
-	private void add(Element el, boolean overwrite) throws Exception {
-		Message msg;
-		if(overwrite){
-			msg = new Message(ERequestMessageType.OVERWRITE, el, this);
-		}
-		else{
-			msg = new Message(ERequestMessageType.ADD, el, this);
-		}
+	private void add(Element element, boolean overwrite) throws Exception {
+		Message request;
+		
+		if(overwrite)
+			request = new Message(ERequestMessageType.OVERWRITE, this);
+		else
+			request = new Message(ERequestMessageType.ADD, this);
 
-		instance.queueMessage(msg);
+		request.setElement(element);
+		
+		instance.queueMessage(request);
 
 		Message message = getResponse();
 		if (message.type == EResponseMessageType.ERR)

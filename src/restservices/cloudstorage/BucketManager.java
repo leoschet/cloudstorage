@@ -16,162 +16,145 @@ public class BucketManager extends Thread{
 
 	private Bucket bucket;
 	private String fileName;
+
+	private BlockingQueue<Message> requestQueue;
 	
-	private BlockingQueue<Message> queue;
-	
+	public BucketManager(int id) {
+		this.fileName = "Bucket_" + id + ".xml";
+	}
+
 	public void run(){
-		this.setBucket(readFile());
-		queue = new LinkedBlockingQueue<Message>();
+
+		this.bucket = readFile();
+		requestQueue = new LinkedBlockingQueue<Message>();
+
 		while(true){
-			
-			Message msg;
-			Message answer;
-			Bucket buck;
-			Element element;
-			
-			while ((msg = queue.poll()) != null) {
-				
-				if(msg.getMessage().equals("searchInterval")){
-					
-					if(msg.getFirst()!= null && msg.getLast() != null){
-						buck = searchInterval(msg.getFirst(), msg.getLast());
-						answer = new Message("ok");
-						answer.setBucket(buck);
+			Message request;
+			Message response;
+
+			request = getRequest();
+
+			if(request.type == ERequestMessageType.SEARCH_INTERVAL){
+
+				if (request.getFirstKey() != null && request.getLastKey() != null) {
+					Bucket buck = searchInterval(request.getFirstKey(), request.getLastKey());
+					response = new Message(EResponseMessageType.OK);
+					response.setBucket(buck);
+
+					try {
+						request.getCaller().getQueue().put(response);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+			} else if (request.type == ERequestMessageType.SEARCH) {
+
+				if(request.getKey() != null){
+					try {
+						Element element = search(request.getKey());
+						response = new Message(EResponseMessageType.OK);
+						response.setElement(element);
 						try {
-							msg.getCaller().getQueue().put(answer);
+							request.getCaller().getQueue().put(response);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} catch (ElementNotFoundException e1) {
+						response = new Message(EResponseMessageType.ERR);
+						response.setException(e1);
+						try {
+							request.getCaller().getQueue().put(response);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
 				}
-				else if(msg.getMessage().equals("search")){
-					
-					if(msg.getKey() != null){
-						try {
-							element = search(msg.getKey());
-							answer = new Message("ok");
-							answer.setElement(element);
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} catch (ElementNotFoundException e1) {
-							answer = new Message("ex");
-							answer.setException(e1);
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-				else if(msg.getMessage().equals("remove")){
-					if(msg.getKey() != null){
-						try {
-							remove(msg.getKey());
-							answer = new Message("ok");
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} catch (ElementNotFoundException e1) {
-							answer = new Message("ex");
-							answer.setException(e1);
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-					
-				}
-				else if(msg.getMessage().equals("overWrite")){
-					if(msg.getElement() != null){
-						try {
-							overWrite(msg.getElement());
-							answer = new Message("ok");
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}catch (OverWriteException e1) {
-							answer = new Message("ex");
-							answer.setException(e1);
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-				else if(msg.getMessage().equals("add")){
-					if(msg.getElement() != null){
-						try {
-							add(msg.getElement());
-							answer = new Message("ok");
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}catch (ElementAlreadyExistsException e1) {
-							answer = new Message("ex");
-							answer.setException(e1);
-							try {
-								msg.getCaller().getQueue().put(answer);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-				else if(msg.getMessage().equals("all")){
-					answer = new Message("ok");
-					answer.setBucket(bucket);
+			} else if (request.type == ERequestMessageType.REMOVE) {
+				if(request.getKey() != null){
 					try {
-						msg.getCaller().getQueue().put(answer);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						remove(request.getKey());
+						response = new Message(EResponseMessageType.OK);
+						try {
+							request.getCaller().getQueue().put(response);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} catch (ElementNotFoundException e1) {
+						response = new Message(EResponseMessageType.ERR);
+						response.setException(e1);
+						try {
+							request.getCaller().getQueue().put(response);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
-				
+
+			} else if (request.type == ERequestMessageType.OVERWRITE) {
+				if(request.getElement() != null){
+					try {
+						overWrite(request.getElement());
+						response = new Message(EResponseMessageType.OK);
+						try {
+							request.getCaller().getQueue().put(response);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}catch (OverWriteException e1) {
+						response = new Message(EResponseMessageType.ERR);
+						response.setException(e1);
+						try {
+							request.getCaller().getQueue().put(response);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			} else if (request.type == ERequestMessageType.ADD) {
+				if(request.getElement() != null){
+					try {
+						add(request.getElement());
+						response = new Message(EResponseMessageType.OK);
+						try {
+							request.getCaller().getQueue().put(response);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}catch (ElementAlreadyExistsException e1) {
+						response = new Message(EResponseMessageType.ERR);
+						response.setException(e1);
+						try {
+							request.getCaller().getQueue().put(response);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			} else if (request.type == ERequestMessageType.GET_ALL) {
+				response = new Message(EResponseMessageType.OK);
+				response.setBucket(bucket);
+				try {
+					request.getCaller().getQueue().put(response);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			
+
 		}
-		
+
 	}
-		
-	public BlockingQueue<Message> getQueue(){
-		return this.queue;
-	}
-	
-	public void setFileName(int id){
-		this.setFileName("Bucket_"+id+".xml");
-	}
-	
-	public Bucket getBucket() {
-		return bucket;
-	}
-	public void setBucket(Bucket bucket) {
-		this.bucket = bucket;
-	}
-	
+
 	public void overWrite(Element e) throws OverWriteException{
 		try {
 			bucket.remove(e.getKey());
@@ -187,16 +170,16 @@ public class BucketManager extends Thread{
 		bucket.add(e);
 		writeFile();
 	}
-	
+
 	public void remove(String key) throws ElementNotFoundException{
 		bucket.remove(key);
 		writeFile();
 	}
-	
+
 	public Element search(String key) throws ElementNotFoundException{
 		return bucket.search(key);
 	}
-	
+
 	public Bucket searchInterval(String first, String last){
 		return new Bucket(bucket.searchInterval(first,last));
 	}
@@ -205,22 +188,18 @@ public class BucketManager extends Thread{
 		return fileName;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-
 	private void writeFile(){		
-	    try {
-	    	JAXBContext contextObj = JAXBContext.newInstance(Bucket.class);  
-		    Marshaller marshallerObj = contextObj.createMarshaller();  
-		    marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
+		try {
+			JAXBContext contextObj = JAXBContext.newInstance(Bucket.class);  
+			Marshaller marshallerObj = contextObj.createMarshaller();  
+			marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
 			marshallerObj.marshal(bucket, new FileOutputStream(fileName));
 		} catch (FileNotFoundException | JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}  
 	}
-	
+
 	private Bucket readFile(){
 		Bucket bucket = null;
 		try {  
@@ -235,7 +214,17 @@ public class BucketManager extends Thread{
 	}
 
 	public void queueMessage(Message msg) throws InterruptedException {
-		queue.put(msg);
+		requestQueue.put(msg);
 	}
-	
+
+	private Message getRequest() {
+		Message msg = null;
+
+		while (msg == null) {
+			msg = requestQueue.poll();
+		}
+
+		return msg;
+	}
+
 }

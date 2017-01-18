@@ -32,13 +32,15 @@ public class Bucket{
 		this.elements = elements;
 	}
 	
-	public void add(Element e) throws ElementAlreadyExistsException{
+	public void add(Element e) throws ElementAlreadyExistsException {
 		try {
 			search(e.getKey());
+			throw new ElementAlreadyExistsException();
 		} catch (ElementNotFoundException e1) {
 			// TODO Auto-generated catch block
 			elements.add(e);
 		}
+		
 	}
 	
 	public void remove(String key) throws ElementNotFoundException{	

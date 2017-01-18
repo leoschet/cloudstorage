@@ -30,7 +30,7 @@ public class Application {
 		return element;
 	}
 
-	private StringWriter getElement(Element element) throws JAXBException {
+	private String getElement(Element element) throws JAXBException {
 
 		JAXBContext contextObj = JAXBContext.newInstance(Element.class);  
 		Marshaller marshallerObj = contextObj.createMarshaller();  
@@ -38,7 +38,7 @@ public class Application {
 		StringWriter stringWriter = new StringWriter();
 		marshallerObj.marshal(element, stringWriter);
 
-		return stringWriter;
+		return stringWriter.toString();
 	}
 
 	/**
@@ -62,6 +62,7 @@ public class Application {
 		}
 		catch (ElementAlreadyExistsException e) {
 			// TODO nova execao
+			return Response.serverError().build();
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -75,8 +76,10 @@ public class Application {
 	@Path("/getFile")
 	public Response getFile(@QueryParam("key") String key) {
 		
+		String xml = "nothing";
+		
 		try{
-			getElement(functions.search(key));
+			xml = getElement(functions.search(key));
 		}		
 		catch (ElementNotFoundException e) {
 			// TODO nova execao
@@ -91,7 +94,7 @@ public class Application {
 		}
 		
 		
-		return Response.ok("Element added!", MediaType.TEXT_PLAIN).build();
+		return Response.ok(xml, MediaType.TEXT_XML).build();
 	}
 
 	@POST
