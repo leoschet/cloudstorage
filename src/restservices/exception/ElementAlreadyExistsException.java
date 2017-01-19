@@ -1,4 +1,4 @@
-package restservices.cloudstorage.Exception;
+package restservices.exception;
 
 public class ElementAlreadyExistsException extends Exception{
 

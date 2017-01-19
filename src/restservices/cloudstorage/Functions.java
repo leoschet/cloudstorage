@@ -3,7 +3,8 @@ package restservices.cloudstorage;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import restservices.cloudstorage.Exception.InvalidKeyException;
+import restservices.exception.InvalidKeyException;
+
 
 public class Functions {
 	
@@ -54,7 +55,7 @@ public class Functions {
 		return response.getElement();
 	}
 
-	public Bucket searchInterval(String firstKey, String lastKey) throws InterruptedException, InvalidKeyException {
+	public Bucket searchInterval(String firstKey, String lastKey) throws InterruptedException, restservices.exception.InvalidKeyException {
 		
 		Message request = new Message(ERequestMessageType.SEARCH_INTERVAL, this);
 		request.setSearchInterval(firstKey, lastKey);

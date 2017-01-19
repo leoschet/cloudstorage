@@ -11,10 +11,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import restservices.cloudstorage.Exception.ElementAlreadyExistsException;
-import restservices.cloudstorage.Exception.ElementNotFoundException;
-import restservices.cloudstorage.Exception.InvalidInputException;
-import restservices.cloudstorage.Exception.OverWriteException;
+import restservices.exception.ElementAlreadyExistsException;
+import restservices.exception.ElementNotFoundException;
+import restservices.exception.InvalidInputException;
+import restservices.exception.OverWriteException;
 
 
 public class BucketManager extends Thread{

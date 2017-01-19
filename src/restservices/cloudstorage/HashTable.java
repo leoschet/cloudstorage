@@ -1,6 +1,6 @@
 package restservices.cloudstorage;
 
-import restservices.cloudstorage.Exception.InvalidKeyException;
+import restservices.exception.InvalidKeyException;
 
 public class HashTable {
 
