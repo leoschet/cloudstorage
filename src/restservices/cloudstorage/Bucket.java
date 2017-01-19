@@ -10,6 +10,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import restservices.cloudstorage.Exception.ElementAlreadyExistsException;
+import restservices.cloudstorage.Exception.ElementNotFoundException;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType( propOrder = { "elements"} )
 @XmlRootElement(name = "Bucket")

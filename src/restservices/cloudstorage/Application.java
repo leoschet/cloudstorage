@@ -9,6 +9,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBException;
 
+import restservices.cloudstorage.Exception.ElementAlreadyExistsException;
+import restservices.cloudstorage.Exception.ElementNotFoundException;
+import restservices.cloudstorage.Exception.InvalidKeyException;
+
 @Path("/")
 public class Application {
 

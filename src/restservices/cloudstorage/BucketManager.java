@@ -14,7 +14,6 @@ import javax.xml.bind.Unmarshaller;
 import restservices.cloudstorage.Exception.ElementAlreadyExistsException;
 import restservices.cloudstorage.Exception.ElementNotFoundException;
 import restservices.cloudstorage.Exception.InvalidInputException;
-import restservices.cloudstorage.Exception.InvalidKeyException;
 import restservices.cloudstorage.Exception.OverWriteException;
 
 
