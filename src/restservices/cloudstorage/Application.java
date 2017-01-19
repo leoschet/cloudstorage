@@ -30,10 +30,8 @@ public class Application {
 	@Path("/storeFile")
 	public Response storeFile(String xml){
 		
-		try{
-			Parser<Element> parse = new Parser<Element>();
-			
-			Element element = parse.toParsableObject(xml);
+		try{			
+			Element element = Parser.elementToParsableObject(xml);
 			functions.insert(element);
 			return Response.ok("Element added!", MediaType.TEXT_PLAIN).build();
 		}
@@ -55,10 +53,8 @@ public class Application {
 	public Response getFile(@QueryParam("key") String key) {
 		
 		try{
-			Parser<Element> parse = new Parser<Element>();
-			
 			Element element = functions.search(key);
-			String xml = parse.toString(element);
+			String xml = Parser.toString(element);
 			return Response.ok(xml, MediaType.TEXT_XML).build();
 			
 		} catch (ElementNotFoundException e) {
@@ -97,11 +93,9 @@ public class Application {
 	@Path("/exportDatabase")
 	public Response exportDatabase() {
 		try {
-			Parser<Bucket> parse = new Parser<Bucket>();
-			
 			Bucket bucket = functions.exportElements();
 
-			String xml = parse.toString(bucket);
+			String xml = Parser.toString(bucket);
 			return Response.ok(xml, MediaType.TEXT_XML).build();
 			
 		} catch (InvalidKeyException | InterruptedException e) {
@@ -116,9 +110,7 @@ public class Application {
 	public Response importDatabase(String xml) {
 		// TODO: Load xml on HashTable
 		try{
-			Parser<Bucket> parse = new Parser<Bucket>();
-			
-			Bucket bucket = parse.toParsableObject(xml);
+			Bucket bucket = Parser.bucketToParsableObject(xml);
 			functions.importElements(bucket, true);
 			
 			return Response.ok("Database imported", MediaType.TEXT_PLAIN).build();
