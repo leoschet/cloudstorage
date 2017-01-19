@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType( propOrder = { "key", "data"} )
 @XmlRootElement(name = "Element")
-public class Element{
+public class Element {
 
 	@XmlElement(name = "Key")
 	private String key;
@@ -17,28 +17,16 @@ public class Element{
 	@XmlElement(name = "Data")
 	private String data;
 	
+	public Element(String key, String data){
+		this.key = key;
+		this.data = data;
+	}
+	
 	public String getData() {
 		return data;
 	}
-	public void setData(String data) {
-		this.data = data;
-	}
+	
 	public String getKey() {
 		return key;
 	}
-	public void setKey(String key) {
-		this.key = key;
-	}
-	
-	public Element(String key,String data){
-		this.key = key;
-		this.data = data;
-	}
-	
-	public Element(){
-		this.key = null;
-		this.data = null;
-	}
-	
-	
 }
