@@ -19,11 +19,11 @@ public class HashTable {
 
 	private HashTable(){
 		this.setBucketManagers(new BucketManager[SIZE]);
-		int i  =10;
-		//for(int i = 0; i < SIZE; i++){
+		
+		for(int i = 0; i < SIZE; i++){
 			bucketManagers[i] = new BucketManager(i);
 			bucketManagers[i].start(); // TODO: set run argument
-		//}
+		}
 	}
 
 	private void setBucketManagers(BucketManager[] bucketManagers) {
