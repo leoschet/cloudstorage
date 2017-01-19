@@ -3,6 +3,8 @@ package restservices.cloudstorage;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import restservices.cloudstorage.Exception.InvalidKeyException;
+
 public class Functions {
 	
 	private BlockingQueue<Message> responseQueue;
@@ -94,6 +96,20 @@ public class Functions {
 	public void importElements(Bucket bucket, boolean overwrite) throws Exception  {
 		for(int i = 0; i < bucket.getElements().size(); i++)
 			add(bucket.getElements().get(i),overwrite);
+	}
+	
+	public void cleanDataBase() throws Exception{
+		Message request = new Message(ERequestMessageType.CLEAN, this);
+		
+		int bucketsAmount = instance.queueMessageAll(request);
+		
+		Message response;
+		for (int i = 0; i <= bucketsAmount; i += 1) {
+			response = getResponse();
+			if(response.type == EResponseMessageType.ERR)
+				throw response.getException();
+		}
+		
 	}
 	
 	private void add(Element element, boolean overwrite) throws Exception {

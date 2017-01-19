@@ -1,4 +1,4 @@
-package restservices.cloudstorage;
+package restservices.cloudstorage.Exception;
 
 public class ElementNotFoundException extends Exception{
 

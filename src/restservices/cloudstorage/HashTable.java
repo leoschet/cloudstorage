@@ -1,5 +1,7 @@
 package restservices.cloudstorage;
 
+import restservices.cloudstorage.Exception.InvalidKeyException;
+
 public class HashTable {
 
 	private static int SIZE = 36;
