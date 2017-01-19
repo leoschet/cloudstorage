@@ -25,7 +25,7 @@ public class Functions {
 		add(e, true);
 	}
 
-	public void remove(String key) throws Exception{
+	public void remove(String key) throws Exception {
 		
 		Message request = new Message(ERequestMessageType.REMOVE, this);
 		request.setSearchKey(key);
@@ -64,8 +64,8 @@ public class Functions {
 			Message response = getResponse();
 			
 			if(response.type == EResponseMessageType.OK)
-				if(response.getBucket() != null && response.getBucket().getElements() != null)
-					bucket.getElements().addAll(response.getBucket().getElements());
+				if(response.getBucket() != null && response.getBucket().hasElements())
+					bucket.merge(response.getBucket());
 		}
 		
 		bucket.sort();
@@ -83,8 +83,8 @@ public class Functions {
 			response = getResponse();
 			
 			if(response.type == EResponseMessageType.OK)
-				if(response.getBucket() != null && response.getBucket().getElements() != null)
-					bucket.getElements().addAll(response.getBucket().getElements());
+				if(response.getBucket() != null && response.getBucket().hasElements())
+					bucket.merge(response.getBucket());
 		}
 		
 		bucket.sort();
@@ -92,8 +92,8 @@ public class Functions {
 	}
 
 	public void importElements(Bucket bucket, boolean overwrite) throws Exception  {
-		for(int i = 0; i < bucket.getElements().size(); i++)
-			add(bucket.getElements().get(i),overwrite);
+		for(int i = 0; i < bucket.size(); i++)
+			add(bucket.search(i), overwrite);
 	}
 	
 	private void add(Element element, boolean overwrite) throws Exception {

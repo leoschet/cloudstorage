@@ -1,10 +1,5 @@
 package restservices.cloudstorage;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -12,35 +7,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 @Path("/")
 public class Application {
 
 	Functions functions;
 	
-	private Element readElement(String s) throws JAXBException {
-		StringReader stringReader = new StringReader(s);
-		JAXBContext jaxbContext = JAXBContext.newInstance(Element.class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		Element element = (Element) unmarshaller.unmarshal(stringReader);
-		return element;
-	}
-
-	private String getElement(Element element) throws JAXBException {
-
-		JAXBContext contextObj = JAXBContext.newInstance(Element.class);  
-		Marshaller marshallerObj = contextObj.createMarshaller();  
-		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
-		StringWriter stringWriter = new StringWriter();
-		marshallerObj.marshal(element, stringWriter);
-
-		return stringWriter.toString();
-	}
-
 	/**
 	 * Constructor for Application service
 	 */
@@ -54,8 +27,11 @@ public class Application {
 	public Response storeFile(String xml){
 		
 		try{
-			Element element = readElement(xml);
+			Parser<Element> parse = new Parser<Element>();
+			
+			Element element = parse.toParsableObject(xml);
 			functions.insert(element);
+			return Response.ok("Element added!", MediaType.TEXT_PLAIN).build();
 		}
 		catch(JAXBException e){
 			return Response.serverError().build();
@@ -65,57 +41,90 @@ public class Application {
 			return Response.serverError().build();
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return Response.serverError().build();
 		}
-	
-		return Response.ok("Element added!", MediaType.TEXT_PLAIN).build();
 	}
 
 	@GET
 	@Path("/getFile")
 	public Response getFile(@QueryParam("key") String key) {
 		
-		String xml = "nothing";
-		
 		try{
-			xml = getElement(functions.search(key));
-		}		
-		catch (ElementNotFoundException e) {
+			Parser<Element> parse = new Parser<Element>();
+			
+			Element element = functions.search(key);
+			String xml = parse.toString(element);
+			return Response.ok(xml, MediaType.TEXT_XML).build();
+			
+		} catch (ElementNotFoundException e) {
 			// TODO nova execao
 			return Response.serverError().build();
-		}
-		catch (JAXBException e) {
-		 }
-		
-		catch (Exception e) {
+		} catch (JAXBException e) {
+			return Response.serverError().build();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			return Response.serverError().build();
 		}
-		
-		
-		return Response.ok(xml, MediaType.TEXT_XML).build();
 	}
 
 	@POST
 	@Path("/delete")
 	public Response delete(@QueryParam("key") String key) {
 		// TODO: Delete file with corresponding key from HashTable
-		return null;
+		try{
+			functions.remove(key);
+			return Response.ok("Element removed", MediaType.TEXT_PLAIN).build();
+			
+		} catch (ElementNotFoundException e) {
+			return Response.serverError().build();
+			
+		} catch (JAXBException e) {
+			return Response.serverError().build();
+			
+		} catch (Exception e) {
+			return Response.serverError().build();
+			
+		}
 	}
 
 	@GET
 	@Produces(MediaType.TEXT_XML)
 	@Path("/exportDatabase")
 	public Response exportDatabase() {
-		// TODO: Return all buckets files in one single xml 
-		return null;
+		try {
+			Parser<Bucket> parse = new Parser<Bucket>();
+			
+			Bucket bucket = functions.exportElements();
+
+			String xml = parse.toString(bucket);
+			return Response.ok(xml, MediaType.TEXT_XML).build();
+			
+		} catch (InvalidKeyException | InterruptedException e) {
+			return Response.serverError().build();
+		} catch (JAXBException e) {
+			return Response.serverError().build();
+		}
 	}
 
 	@POST
 	@Path("/importDatabase")
 	public Response importDatabase(String xml) {
 		// TODO: Load xml on HashTable
-		return null;
+		try{
+			Parser<Bucket> parse = new Parser<Bucket>();
+			
+			Bucket bucket = parse.toParsableObject(xml);
+			functions.importElements(bucket, true);
+			
+			return Response.ok("Database imported", MediaType.TEXT_PLAIN).build();
+		}
+		catch(JAXBException e){
+			return Response.serverError().build();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
 	}
 }

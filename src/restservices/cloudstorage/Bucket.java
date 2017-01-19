@@ -13,25 +13,19 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType( propOrder = { "elements"} )
 @XmlRootElement(name = "Bucket")
-public class Bucket{
+public class Bucket {
 
 	@XmlElement(name = "Element")
 	private Vector<Element> elements;
-	
-	public Bucket(){
-		this.setElements(new Vector<Element>());
-	}
-	public Bucket(Vector<Element> elements){
-		this.setElements(elements);
-	}
-	public Vector<Element> getElements() {
-		return elements;
-	}
 
-	private void setElements(Vector<Element> elements) {
+	public Bucket(){
+		this.elements = new Vector<Element>();
+	}
+	
+	public Bucket(Vector<Element> elements){
 		this.elements = elements;
 	}
-	
+
 	public void add(Element e) throws ElementAlreadyExistsException {
 		try {
 			search(e.getKey());
@@ -40,9 +34,12 @@ public class Bucket{
 			// TODO Auto-generated catch block
 			elements.add(e);
 		}
-		
 	}
 	
+	public void merge(Bucket bucket) {
+		this.elements.addAll(bucket.getElements());
+	}
+
 	public void remove(String key) throws ElementNotFoundException{	
 		boolean removed = false;		
 		for(int i = 0; i < elements.size(); i++){
@@ -56,7 +53,7 @@ public class Bucket{
 			throw new ElementNotFoundException();
 		}
 	}
-	
+
 	public Element search(String key) throws ElementNotFoundException{
 		for(int i = 0; i < elements.size(); i++){
 			if(elements.get(i).getKey().equalsIgnoreCase(key)){
@@ -66,6 +63,10 @@ public class Bucket{
 		throw new ElementNotFoundException();
 	}
 	
+	public Element search(int index) throws IndexOutOfBoundsException{
+		return this.elements.get(index);
+	}
+
 	public Vector<Element> searchInterval(String first, String last){	
 		sort();
 		Vector<Element> list = new Vector<Element>();
@@ -77,14 +78,26 @@ public class Bucket{
 		}
 		return list;
 	}
-	
+
 	public void sort() {
-	    Collections.sort(elements, new Comparator<Element>() {
-	        @Override
-	        public int compare(Element e1, Element e2) {
-	                return e1.getKey().compareTo(e2.getKey());
-	        }           
-	    });
+		Collections.sort(elements, new Comparator<Element>() {
+			@Override
+			public int compare(Element e1, Element e2) {
+				return e1.getKey().compareTo(e2.getKey());
+			}           
+		});
 	}
 	
+	private Vector<Element> getElements() {
+		return elements;
+	}
+	
+	public int size() {
+		return this.elements.size();
+	}
+
+	public boolean hasElements() {
+		return (this.elements != null);
+	}
+
 }
