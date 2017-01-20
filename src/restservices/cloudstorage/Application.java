@@ -79,13 +79,12 @@ public class Application {
 			return Response.serverError().build();
 		}
 	}
-	@GET
+	@POST
 	@Path("/delete")
 	public Response delete(@QueryParam("key") String key) {
 		// TODO: Delete file with corresponding key from HashTable
 		try{
-			functions.cleanDataBase();
-			//functions.remove(key);
+			functions.remove(key);
 			return Response.ok("Element removed", MediaType.TEXT_PLAIN).build();
 			
 		} catch (InvalidInputException e) {
