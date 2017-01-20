@@ -4,7 +4,7 @@ import restservices.exception.InvalidKeyException;
 
 public class HashTable {
 
-	private static int SIZE = 36;
+	private static int SIZE = 4;
 
 	private static HashTable instance;
 	private BucketManager[] bucketManagers;
@@ -23,7 +23,9 @@ public class HashTable {
 		for(int i = 0; i < SIZE; i++){
 			bucketManagers[i] = new BucketManager(i);
 			bucketManagers[i].start(); // TODO: set run argument
+			
 		}
+		
 	}
 
 	private void setBucketManagers(BucketManager[] bucketManagers) {
@@ -51,7 +53,7 @@ public class HashTable {
 	}
 
 	public int queueMessageAll(Message msg) throws InvalidKeyException, InterruptedException {
-
+		
 		for (int i = 0; i < SIZE; i += 1)
 			bucketManagers[i].queueMessage(msg);
 		return SIZE;
@@ -62,11 +64,12 @@ public class HashTable {
 		int index = -1;
 
 		char firstChar = key.charAt(0);
-
-		if ((firstChar >= 'a' && firstChar <= 'z') || (firstChar >= 'A' && firstChar <= 'Z'))
-			index = 10 + firstChar - 'a';
-		else if (firstChar <= '0' && firstChar <= '9')
-			index = firstChar - '0';
+		if (firstChar >= 'a' && firstChar <= 'z') 
+			index = 1+((firstChar-'a')/10);
+		else if (firstChar >= 'A' && firstChar <= 'Z')
+			index = 1+((firstChar-'A')/10);
+		else if (firstChar >= '0' && firstChar <= '9')
+			index = 0;
 		else
 			throw new InvalidKeyException();
 

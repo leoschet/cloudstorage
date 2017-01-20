@@ -30,18 +30,15 @@ public class BucketManager extends Thread{
 
 	public void run(){
 
-		this.bucket = readFile();
 		requestQueue = new LinkedBlockingQueue<Message>();
+		this.bucket = readFile();
 
 		while(true){
 			Message request;
 			Message response;
 
 			request = getRequest();
-			String sim = "sim";
-			if(request.type.getClass() == ERequestMessageType.class){
-				sim = "nao";
-			}
+			
 			switch ((ERequestMessageType) request.type) {
 			case ADD:
 				response = add(request);
@@ -70,6 +67,13 @@ public class BucketManager extends Thread{
 				break;
 			}
 			sendResponse(request,response);
+		
+			if(request.type == ERequestMessageType.ADD ||
+					request.type == ERequestMessageType.OVERWRITE ||
+					request.type == ERequestMessageType.REMOVE||
+					request.type == ERequestMessageType.CLEAN){
+				writeFile();
+			}
 		}
 			
 	}
@@ -88,7 +92,7 @@ public class BucketManager extends Thread{
 		if(request.getElement() != null){
 			try {
 				this.bucket.add(request.getElement());
-				writeFile();
+				//writeFile();
 				response = new Message(EResponseMessageType.OK);
 			}catch (ElementAlreadyExistsException e1) {
 				response = new Message(EResponseMessageType.ERR);
@@ -146,7 +150,7 @@ public class BucketManager extends Thread{
 		if(request.getKey() != null){
 			try {
 				this.bucket.remove(request.getKey());
-				writeFile();
+				//writeFile();
 				response = new Message(EResponseMessageType.OK);
 			} catch (ElementNotFoundException elementNotFoundException) {
 				response = new Message(EResponseMessageType.ERR);
@@ -183,7 +187,7 @@ public class BucketManager extends Thread{
 	
 	private Message clean(){
 		this.bucket = new Bucket();
-		writeFile();
+		//writeFile();
 		return new Message(EResponseMessageType.OK);
 	}
 

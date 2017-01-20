@@ -82,7 +82,7 @@ public class Functions {
 		
 		Bucket bucket = new Bucket();
 		Message response = null;
-		for (int i = 0; i <= bucketsAmount; i += 1) {
+		for (int i = 0; i < bucketsAmount; i += 1) {
 			response = getResponse();
 			
 			if(response.type == EResponseMessageType.OK)
@@ -105,7 +105,7 @@ public class Functions {
 		int bucketsAmount = instance.queueMessageAll(request);
 		
 		Message response;
-		for (int i = 0; i <= bucketsAmount; i += 1) {
+		for (int i = 0; i < bucketsAmount; i += 1) {
 			response = getResponse();
 			if(response.type == EResponseMessageType.ERR)
 				throw response.getException();
