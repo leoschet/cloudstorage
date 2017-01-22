@@ -25,7 +25,7 @@ public class BucketManager extends Thread{
 	private BlockingQueue<Message> requestQueue;
 	
 	public BucketManager(int id) {
-		this.fileName = "Bucket_" + id + ".xml";
+		this.fileName = "/home/ccteam/tomcat/files/Bucket_" + id + ".xml";
 	}
 
 	public void run(){
@@ -66,14 +66,24 @@ public class BucketManager extends Thread{
 				response.setException(new InvalidInputException());
 				break;
 			}
-			sendResponse(request,response);
-		
+			
 			if(request.type == ERequestMessageType.ADD ||
 					request.type == ERequestMessageType.OVERWRITE ||
 					request.type == ERequestMessageType.REMOVE||
 					request.type == ERequestMessageType.CLEAN){
-				writeFile();
+				try {
+					writeFile();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JAXBException e) {
+					// TODO Auto-generated catch block
+					response.setException(e);
+				}
 			}
+			sendResponse(request,response);
+		
+			
 		}
 			
 	}
@@ -195,16 +205,14 @@ public class BucketManager extends Thread{
 		return fileName;
 	}
 
-	private void writeFile(){		
-		try {
+	private void writeFile() throws FileNotFoundException, JAXBException{		
+		
 			JAXBContext contextObj = JAXBContext.newInstance(Bucket.class);  
 			Marshaller marshallerObj = contextObj.createMarshaller();  
 			marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
 			marshallerObj.marshal(bucket, new FileOutputStream(fileName));
-		} catch (FileNotFoundException | JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  
+		
+		 
 	}
 
 	private Bucket readFile(){
